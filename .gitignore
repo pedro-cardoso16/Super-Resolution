@@ -140,6 +140,9 @@ venv.bak/
 .spyderproject
 .spyproject
 
+# VSCode project settings
+.vscode
+
 # Rope project settings
 .ropeproject
 
@@ -171,3 +174,5 @@ cython_debug/
 .pypirc
 
 tmp/
+playground.py
+*.jpg
