@@ -14,9 +14,9 @@ author = "Pedro Cardoso and Nadira Saly"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "sphinx_rtd_theme",
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
+    "sphinx_rtd_theme",
 ]
 
 templates_path = ["_templates"]

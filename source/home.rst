@@ -2,8 +2,12 @@ Home
 ====
 
 Convolutional Neural Networks
-`Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel 
-Convolutional Neural Network <https://arxiv.org/abs/1609.05158>`_
+
+The follwoing code was based on the article
+*Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel 
+Convolutional Neural Network*: [`arxiv <https://arxiv.org/abs/1609.05158>`_]
+and on the `PyTorch example super_resolution <https://github.com/pytorch/examples/tree/main/super_resolution>`_
+
 They call their model an ESPCN (Efficient Sub-Pixel Convolutional Neural-Network)
 
 In order to have a Low-Resolution image we convolve by a gaussian filter and then 

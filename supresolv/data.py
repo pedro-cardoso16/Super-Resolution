@@ -144,7 +144,7 @@ def downsample_image(
     image = image.filter(PIL.ImageFilter.GaussianBlur)
 
     # downsample image
-    image = image.resize((w // factor, h // factor), PIL.Image.Resampling.NEAREST)
+    image = image.resize((w // factor, h // factor), PIL.Image.Resampling.BICUBIC)
 
     if out:
         image.save(out)

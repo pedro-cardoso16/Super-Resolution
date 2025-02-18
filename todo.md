@@ -1,8 +1,15 @@
 - [x] Find a way to easily calculate the PSNR
 - [ ] Simplify the operations by creating functions
-- [ ] Do the comparison of all the data 
+  - [ ] function for evaluation of model and test image
+  - [ ] function for interactive mode
 
 - [x] Finish model evaluation
+
+
+- [ ] maybe add random crop selection and 
+## Presentation
+- [ ] Finish the in sphinx 
+
 
 1. Center crop the original image to the correct target image
 2. Create the input 

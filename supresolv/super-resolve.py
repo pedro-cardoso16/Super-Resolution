@@ -1,33 +1,41 @@
 import argparse
 
+# -- Main parser -------------------------------------------------------------
+
 parser = argparse.ArgumentParser(
     prog="super-resolve",
     description="CNN model for super resolution of images",
 )
 
 parser.add_argument("file")
-parser.add_argument("-u", "--upscale_factor", default=3)
+parser.add_argument("-u", "--upscale-factor", default=3)
 parser.add_argument("-m", "--model", help="load MODEL for super resolution")
+parser.add_argument("-o", "--output", help="OUTPUT image")
 
 subparsers = parser.add_subparsers(help="Sub-type")
 
-# -- train subparser ----------------------------
+# -- Train subparser ---------------------------------------------------------
 
 train_parser = subparsers.add_parser("train")
 
 train_parser.add_argument("folder")
-train_parser.add_argument("-u", "--upscale_factor", default=3)
+train_parser.add_argument("-u", "--upscale-factor", default=3)
 train_parser.add_argument(
-    "--save_folder", default="./", help="save models to destination folder"
+    "--save-folder", default="./", help="save models to destination folder"
 )
 train_parser.add_argument(
     "-e", "--epochs", default=30, help="How many epochs to train the model"
 )
-train_parser.add_argument("-b", "--batch_size", default=32)
+train_parser.add_argument("-b", "--batch-size", default=32)
+train_parser.add_argument("--lr", "--learning-rate", default=0.001)
 
+# -- Evaluation subparser ----------------------------------------------------
+
+eval_parser = subparsers.add_parser("eval")
 
 if __name__ == "__main__":
-    pass
+    # parser.parse_args()
+    parser.parse_args()
 
 
 # def train_model(epochs, folder):
