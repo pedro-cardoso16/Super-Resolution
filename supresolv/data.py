@@ -8,7 +8,7 @@ import PIL
 from torchvision.transforms import Compose, CenterCrop, ToTensor, Resize
 import torchvision.transforms.functional
 import numpy as np
-from dataset import ImageSet
+from .dataset import ImageSet
 
 
 def download_bsd300(dest="dataset"):

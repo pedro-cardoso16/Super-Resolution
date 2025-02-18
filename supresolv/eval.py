@@ -1,7 +1,9 @@
 import torch, torchvision
 import os
-from data import *
-from dataset import *
+from torcheval.metrics.functional import peak_signal_noise_ratio
+
+from .data import *
+from .dataset import *
 
 
 def eval_model(filepath: str, upscale_factor, model: any):
@@ -9,7 +11,6 @@ def eval_model(filepath: str, upscale_factor, model: any):
     it = input_transform(crop_size, 3)
     tt = target_transform(crop_size)
 
-    
     input = it(load_img(filepath))
     target = tt(load_img(filepath))
 

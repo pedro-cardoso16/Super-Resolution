@@ -7,14 +7,16 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "Super Resolution"
-copyright = "2025, Pedro Cardoso and Nadira Saly"
+copyright = "2025, Pedro Cardoso & Nadira Saly"
 author = "Pedro Cardoso and Nadira Saly"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx_rtd_theme',
+    "sphinx_rtd_theme",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.doctest",
 ]
 
 templates_path = ["_templates"]
