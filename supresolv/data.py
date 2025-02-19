@@ -12,6 +12,7 @@ import torchvision.transforms.functional
 from torchvision.datasets.imagenet import ImageNet
 import numpy as np
 from .dataset import ImageSet
+import torch.nn as nn
 
 
 def download_bsd300(dest="dataset"):
@@ -254,3 +255,23 @@ def train_model(
         )
 
     return 0
+
+
+def process_image(image: str, model: str, output_filepath: str):
+
+    image = PIL.Image.open(image).copy().convert("YCbCr")
+    input, cb, cr = image_to_input(image)
+
+    if type(model) == str:  # load model from filepath
+        model: nn.Module = torch.load(
+            model,
+            weights_only=False,
+        )
+
+    model.to("cpu")
+    model.eval()
+
+    output = model(input)
+    output_image: PIL.Image.Image = output_to_image(output, cb, cr)
+
+    output_image.save(output_filepath)

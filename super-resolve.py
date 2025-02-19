@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import torch, torchvision, torcheval
 import os, sys, re
 
-from supresolv.data import train_model
+from supresolv.data import train_model, process_image
 
 
 from tqdm import tqdm
@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(
     prog="super-resolve",
     description="CNN model for super resolution of images",
 )
-
+parser.add_argument("image", help="IMAGE file to super resolve")
 parser.add_argument("-m", "--model", help="load MODEL for super resolution")
 parser.add_argument("-o", "--output", help="OUTPUT image")
 
@@ -63,8 +63,15 @@ if __name__ == "__main__":
                 batch_size=args.batch_size,
             )
 
-        case _:
+        case _: # default case
             args, unknown = parser.parse_known_args()
+           
+            process_image(args.image, args.model, args.output)
+
+
+
+
+
 
     # if args.command == 'train':
     #     print('train called')
