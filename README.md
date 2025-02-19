@@ -1,4 +1,7 @@
 # Super Resolution
+This code implements the based on the article
+
+$x^2$
 
 https://data.vision.ee.ethz.ch/cvl/DIV2K/
 
@@ -12,4 +15,4 @@ Once the model is trained you can excute it using
 python3 super-resolve <image> -m <model> -o <output-image>
 ```
 
-
+## 
