@@ -1,12 +1,15 @@
 from os.path import exists, join, basename
 from os import makedirs, remove
+import os
 import PIL.Image
 from six.moves import urllib
 import tarfile
 import torchvision
 import PIL
+import torch
 from torchvision.transforms import Compose, CenterCrop, ToTensor, Resize
 import torchvision.transforms.functional
+from torchvision.datasets.imagenet import ImageNet
 import numpy as np
 from .dataset import ImageSet
 
@@ -92,7 +95,7 @@ def get_test_set(upscale_factor):
 
 def image_to_input(filepath: str) -> tuple:
     """
-    Transforms the image from filepath to input image the model input should be 
+    Transforms the image from filepath to input image the model input should be
     the channel \'y\'
     """
     img = PIL.Image.open(filepath).convert("YCbCr")
@@ -106,7 +109,7 @@ def output_to_image(out, cb, cr) -> PIL.Image.Image:
     """
     Convert model output to an image
 
-        :param out: direct output of the model 
+        :param out: direct output of the model
         :param cb: cb channels
         :param cr: cr channels
     """
@@ -122,6 +125,7 @@ def output_to_image(out, cb, cr) -> PIL.Image.Image:
     )
 
     return out_img
+
 
 def downsample_image(
     filepath: str, out: str = None, factor: int = 3
@@ -152,12 +156,16 @@ def downsample_image(
     return image
 
 
-def image_to_input(filepath) -> tuple:
+def image_to_input(img: str | PIL.Image.Image) -> tuple:
     """
     Transform the image from filepath to input image the model input should be
     the channel \'y\'
     """
-    img = PIL.Image.open(filepath).convert("YCbCr")
+
+    if type(img) == str:
+        img = PIL.Image.open(img).convert("YCbCr")
+
+    img.convert("YCbCr")
     y, cb, cr = img.split()
 
     img_to_tensor = torchvision.transforms.ToTensor()
@@ -180,3 +188,69 @@ def output_to_image(out, cb, cr) -> PIL.Image.Image:
     )
 
     return out_img
+
+
+def train_model(
+    epochs: int,
+    upscale_factor: int,
+    train_folder,
+    model_folder: str,
+    lr: float = 0.001,
+    batch_size: int = 512,
+    device: str = "cpu",
+) -> int:
+    from torch.utils.data import DataLoader
+    from .model import ESPCN
+    from tqdm import tqdm
+
+    crop_size = calculate_valid_crop_size(256, upscale_factor)
+
+    train_set = ImageSet(
+        train_folder,
+        input_transform=input_transform(crop_size, upscale_factor),
+        target_transform=target_transform(crop_size),
+    )
+
+    train_loader = DataLoader(
+        train_set,
+        batch_size=batch_size,
+        shuffle=True,
+        pin_memory=True,
+        pin_memory_device=device,
+    )
+
+    model = ESPCN(upscale_factor=upscale_factor)
+    if device == "cuda":
+        model.to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    mse_loss = torch.nn.MSELoss()
+
+    for epoch in tqdm(range(epochs)):
+
+        # epoch training
+        for input, target in train_loader:
+
+            input, target = input.to(device), target.to(device)
+            # zeros all gradients
+            optimizer.zero_grad()
+
+            # propagate input in nn
+            output = model(input)
+
+            # loss calculation
+            loss: torch.Tensor = mse_loss(output, target)
+            loss.backward()
+
+            # parameters update
+            optimizer.step()
+
+        # save the model for each epoch
+        torch.save(
+            model,
+            os.path.join(
+                model_folder,
+                f"model-{epoch+1}.pth",
+            ),
+        )
+
+    return 0
