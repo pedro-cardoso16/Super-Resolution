@@ -178,3 +178,5 @@ playground.py
 *.jpg
 .models/
 imagenet-mini/**
+dataset/**
+todo.md
