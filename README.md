@@ -8,9 +8,9 @@ and the pytorch example:
 ## Getting Started
 In order to train the model you can run the following command in the project directory
 ```shell
-python3 super-resolve train ./dataset/BSDS300/images/train --batch-size 32 --epoch 30 -S .models --use-cuda 
+python3 super-resolve train dataset/BSDS300/images/train --batch-size 32 --epoch 30 -S .models --use-cuda 
 ```
-If no training set is specified, **BSDS300** will be downloaded.
+If no training set is specified, [BSDS300](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/bsds/) will be downloaded.
 
 ### Applying the model
 Once the model is trained you can excute it using the following command:
