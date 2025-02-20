@@ -10,6 +10,8 @@ In this neural network, we use only the channel ``Y`` of ``YCbCr`` color space
 and to get the original color image we do an interpolation using the color channels 
 ``Cb`` and ``Cr``. 
 
+We explain how the layers work:
+
 .. image:: images/SVSRnet.jpg
    :alt: SVSRnet
 
@@ -22,14 +24,17 @@ and to get the original color image we do an interpolation using the color chann
    
    where :math:`W_l` and :math:`b_l` are the learnable weights and biases, and 
    :math:`\phi` is the activation function for example :math:`\tanh(x)` or 
-   :math:`\sigma(x)` the sigmoid function.
+   :math:`\sigma(x)` the sigmoid function or the ``ReLU`` (Rectified Linear Unit).
+
+   the weigths :math:`W_l` represnt the weights of the layer :math:`l`. For instance, 
+   if a  
+   
 
 1. **Propagation Inside The Neural Network**
-   Then, we do successives 2D convolutions and apply ``ReLU`` after each convolution.
    The number of channels may vary, in the implemented mode we change the number of channels 
    to 32 and 64.
 
-3. **Sub-Pixel Convolution Layer:**
+2. **Sub-Pixel Convolution Layer:**
    The last layer performs upscaling using an efficient sub-pixel convolution 
    operation:
 
@@ -41,16 +46,23 @@ and to get the original color image we do an interpolation using the color chann
    to increase spatial resolution. In the final layer the number of channels is always
    :math:`r^2` where :math:`r` is the upscaling-factor.
 
-4. **Output Layer:**
+3. **Output Layer:**
    Produces the final high-resolution image from the learned upscaling filters by
    applying the 
 
 .. literalinclude:: summary.txt
 
 Training
-''''''''
+^^^^^^^^
 
 The training of the model is specific for each upscalling factor and the target images
-must have a dimension that is dividable by :math:`r` so a crop is applied to, we use 
-the ``crop_size = crop_size - (crop_size % upscale_factor)``
+must have a dimension that is divisable by :math:`r` so a compatible crop is calculated 
+using the operation ``valid_crop_size = crop_size - (crop_size % upscale_factor)``.
+
+Once the image is croped, It's transformed into the color space ``YCbCr`` and only
+the ``Y`` channel is taken as input into the NN. The ``Cb`` and ``Cr`` channels are stored for 
+later.
+
+
+
 

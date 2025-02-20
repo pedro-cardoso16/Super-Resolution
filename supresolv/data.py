@@ -101,7 +101,7 @@ def image_to_input(filepath: str) -> tuple:
     """
     img = PIL.Image.open(filepath).convert("YCbCr")
     y, cb, cr = img.split()
-    y = torchvision.transforms.functional.to_tensor(y)
+    y = F.to_tensor(y)
 
     return y, cb, cr
 

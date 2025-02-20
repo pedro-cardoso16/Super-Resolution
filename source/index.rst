@@ -15,4 +15,5 @@ Super Resolution documentation
    espcn
    unet
    results
+   metrics
 

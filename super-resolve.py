@@ -46,7 +46,6 @@ train_parser.add_argument("--use-cuda", action="store_true")
 # eval_parser = subparsers.add_parser("eval")
 
 if __name__ == "__main__":
-
     match sys.argv[1]:
         case "train":
             args, unknown = train_parser.parse_known_args()
