@@ -1,3 +1,8 @@
+"""
+supresolv
+=========
+Main module import
+"""
 from . import data
 from . import dataset
 from . import model

@@ -12,5 +12,7 @@ Super Resolution documentation
    :caption: Contents:
 
    home
-   architecture
+   espcn
+   unet
+   results
 

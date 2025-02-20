@@ -1,9 +1,12 @@
-import PIL.Image
-import torch
-import torch.nn as nn
-import PIL
-from torch.utils.data import DataLoader, Dataset
+"""
+some a
+"""
+
 import os
+
+import PIL.Image
+import PIL
+from torch.utils.data import Dataset
 
 
 def load_img(filepath: str) -> PIL.Image.Image:
@@ -19,6 +22,9 @@ def load_img(filepath: str) -> PIL.Image.Image:
 
 
 def load_img_jpg(filepath: str) -> PIL.Image.Image:
+    """
+    :param filepath: path/to/file
+    """
     return PIL.Image.open(filepath)
 
 
@@ -55,4 +61,4 @@ class ImageSet(Dataset):
             target = self.target_transform(target)
 
         return input_img, target
-
+    

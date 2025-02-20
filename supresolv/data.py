@@ -1,18 +1,18 @@
+import tarfile
 from os.path import exists, join, basename
 from os import makedirs, remove
 import os
 import PIL.Image
-from six.moves import urllib
-import tarfile
-import torchvision
 import PIL
+
+from six.moves import urllib
+import torchvision
 import torch
 from torchvision.transforms import Compose, CenterCrop, ToTensor, Resize
-import torchvision.transforms.functional
-from torchvision.datasets.imagenet import ImageNet
+import torchvision.transforms.functional as F
 import numpy as np
-from .dataset import ImageSet
 import torch.nn as nn
+from .dataset import ImageSet
 
 
 def download_bsd300(dest="dataset"):
@@ -119,8 +119,8 @@ def output_to_image(out, cb, cr) -> PIL.Image.Image:
     out_img_y = out_img_y.clip(0, 255)
     out_img_y = PIL.Image.fromarray(np.uint8(out_img_y[0]), mode="L")
 
-    out_img_cb = cb.resize(out_img_y.size, PIL.Image.BICUBIC)
-    out_img_cr = cr.resize(out_img_y.size, PIL.Image.BICUBIC)
+    out_img_cb = cb.resize(out_img_y.size, PIL.Image.Resampling.BICUBIC)
+    out_img_cr = cr.resize(out_img_y.size, PIL.Image.Resampling.BICUBIC)
     out_img = PIL.Image.merge("YCbCr", [out_img_y, out_img_cb, out_img_cr]).convert(
         "RGB"
     )
@@ -182,8 +182,8 @@ def output_to_image(out, cb, cr) -> PIL.Image.Image:
     out_img_y = out_img_y.clip(0, 255)
     out_img_y = PIL.Image.fromarray(np.uint8(out_img_y[0]), mode="L")
 
-    out_img_cb = cb.resize(out_img_y.size, PIL.Image.BICUBIC)
-    out_img_cr = cr.resize(out_img_y.size, PIL.Image.BICUBIC)
+    out_img_cb = cb.resize(out_img_y.size, PIL.Image.Resampling.BICUBIC)
+    out_img_cr = cr.resize(out_img_y.size, PIL.Image.Resampling.BICUBIC)
     out_img = PIL.Image.merge("YCbCr", [out_img_y, out_img_cb, out_img_cr]).convert(
         "RGB"
     )
@@ -257,12 +257,26 @@ def train_model(
     return 0
 
 
-def process_image(image: str, model: str, output_filepath: str):
+def process_image(image: str, model: str, output_filepath: str) -> int:
+    """
+    Use the model to super resolve image
+
+    :param image: path/to/image
+    :param model: path/to/model.pth
+    :param output_filepath: path/to/output/file
+    """
 
     image = PIL.Image.open(image).copy().convert("YCbCr")
-    input, cb, cr = image_to_input(image)
+    y_input, cb, cr = image_to_input(image)
 
-    if type(model) == str:  # load model from filepath
+    # h = calculate_valid_crop_size(y_input.shape[-1], 3)
+    # v = calculate_valid_crop_size(y_input.shape[-2], 3)
+    # print(h,v)
+    # print(y_input.shape)
+
+    # y_input = F.center_crop(y_input, (h, v))
+
+    if isinstance(model, str):  # load model from filepath
         model: nn.Module = torch.load(
             model,
             weights_only=False,
@@ -271,7 +285,9 @@ def process_image(image: str, model: str, output_filepath: str):
     model.to("cpu")
     model.eval()
 
-    output = model(input)
+    output = model(y_input)
     output_image: PIL.Image.Image = output_to_image(output, cb, cr)
 
     output_image.save(output_filepath)
+
+    return 0

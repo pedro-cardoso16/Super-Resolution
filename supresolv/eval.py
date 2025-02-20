@@ -1,10 +1,11 @@
 import torch
 import torchvision.transforms.functional as F
-
 from torcheval.metrics.functional import peak_signal_noise_ratio, mean_squared_error
+
+from skimage.metrics import structural_similarity
+
 from .data import *
 from .dataset import *
-from skimage.metrics import structural_similarity
 
 
 def eval_model(*imgs: str, upscale_factor: int, model: str | nn.Module) -> list:
@@ -16,7 +17,7 @@ def eval_model(*imgs: str, upscale_factor: int, model: str | nn.Module) -> list:
     :param model: path/to/model.pth or model itself
     """
 
-    if type(model) == str:  # load model from filepath
+    if isinstance(model, str):  # load model from filepath
         model: nn.Module = torch.load(
             model,
             weights_only=False,
@@ -39,11 +40,11 @@ def eval_model(*imgs: str, upscale_factor: int, model: str | nn.Module) -> list:
         )
 
         target = F.to_tensor(load_img(img))
-        target = F.center_crop(target, (crop_size_h, crop_size_v))
+        target = F.center_crop(target, (crop_size_v, crop_size_h))
 
-        img_in = downsample_image(img)
+        img_in = downsample_image(img,None, factor=upscale_factor)
 
-        input, cb, cr = image_to_input(img_in.convert('YCbCr'))
+        input, cb, cr = image_to_input(img_in.convert("YCbCr"))
 
         # input.to('cpu')
         output: torch.Tensor = model(input)
@@ -66,20 +67,33 @@ def eval_model(*imgs: str, upscale_factor: int, model: str | nn.Module) -> list:
             img = i.convert("YCbCr")
             y, _, _ = img.split()
             y = F.to_tensor(y)
+            y *= 255
+            y = y.clip(0, 255)
+            y = y.view(1, -1, target.shape[-2], target.shape[-1])
+            y = y[0]
 
+            # print(
+            #     y.shape, target.shape
+            # )
             psnr = peak_signal_noise_ratio(
                 y.view(crop_size_h, crop_size_v),
-                target.view(crop_size_h, crop_size_v),
+                target.reshape(crop_size_h, crop_size_v),
             ).item()
 
+            # mse = mse_loss(
+            #     y.view(crop_size_h, crop_size_v),
+            #     target.view(crop_size_h, crop_size_v),
+            # )
             mse = mean_squared_error(
                 y.view(crop_size_h, crop_size_v),
-                target.view(crop_size_h, crop_size_v),
+                target.reshape(crop_size_h, crop_size_v),
             ).item()
 
             # print(i.size, target_image.size)
             a = np.array(i.convert("RGB")).swapaxes(0, -1)
-            b = np.array(target_image.convert("RGB")).swapaxes(0, -1)
+            b = np.array(target_image.convert("RGB")).swapaxes(0, -1).swapaxes(-1,-2)
+
+            print(a.shape, b.shape)
 
             ssim = 0
             for index in range(3):
@@ -94,7 +108,6 @@ def eval_model(*imgs: str, upscale_factor: int, model: str | nn.Module) -> list:
             }
 
             result_img.update({name: performance})
-
 
         result.append(result_img)
 
