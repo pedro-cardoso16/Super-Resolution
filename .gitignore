@@ -180,3 +180,5 @@ playground.py
 imagenet-mini/**
 dataset/**
 todo.md
+
+*.ipynb
