@@ -1,0 +1,8 @@
+numpy==2.2.3
+Pillow==11.1.0
+six==1.17.0
+scikit-image==0.25.2
+torch==2.6.0
+torcheval==0.0.7
+torchvision==0.21.0
+tqdm==4.67.1
