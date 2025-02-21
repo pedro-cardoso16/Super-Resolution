@@ -4,8 +4,10 @@ Main handler of command line
 
 import argparse
 import sys
+import torch
+from pathlib import Path
 
-from supresolv.data import train_model, process_image
+from supresolv.data import train_model, process_image, download_bsd300
 
 # -- Main parser -------------------------------------------------------------
 
@@ -23,19 +25,19 @@ subparsers = parser.add_subparsers(help="Sub-type", dest="command")
 
 train_parser = subparsers.add_parser("train")
 train_parser.add_argument("self")
-train_parser.add_argument("train_folder")
+train_parser.add_argument("-f", "--train_folder")
 train_parser.add_argument("-u", "--upscale-factor", default=3)
 train_parser.add_argument(
     "-S",
     "--save-folder",
-    default="./",
+    default=".models",
     type=str,
     help="save models to destination folder",
 )
 train_parser.add_argument(
     "-e", "--epochs", default=30, type=int, help="How many epochs to train the model"
 )
-train_parser.add_argument("-b", "--batch-size", default=256, type=int)
+train_parser.add_argument("-b", "--batch-size", default=32, type=int)
 train_parser.add_argument("--lr", "--learning-rate", default=0.001, type=float)
 
 train_parser.add_argument("--use-cuda", action="store_true")
@@ -50,12 +52,26 @@ if __name__ == "__main__":
         case "train":
             args, unknown = train_parser.parse_known_args()
 
+            if not args.train_folder:
+                download_bsd300("dataset")
+                train_folder_path = Path("dataset/BSDS300/images/train")
+            else:
+                train_folder_path = Path(args.train_folder)
+
+            save_folder_path = Path(args.save_folder)
+            train_folder_path.mkdir(
+                parents=True, exist_ok=True
+            )  # Creates the folder (and parent directories if needed)
+            save_folder_path.mkdir(
+                parents=True, exist_ok=True
+            )  # Creates the folder (and parent directories if needed)
+
             train_model(
                 args.epochs,
                 args.upscale_factor,
-                args.train_folder,
+                str(train_folder_path),
                 args.save_folder,
-                device=("cuda" if args.use_cuda else "cpu"),
+                device=("cuda" if (args.use_cuda and torch.cuda.is_available()) else "cpu"),
                 batch_size=args.batch_size,
             )
 

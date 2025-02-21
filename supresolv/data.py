@@ -216,8 +216,8 @@ def train_model(
         train_set,
         batch_size=batch_size,
         shuffle=True,
-        pin_memory=True,
-        pin_memory_device=device,
+        pin_memory=(True if device == "cuda" else False),
+        pin_memory_device=("cuda" if device == "cuda" else ""),
     )
 
     model = ESPCN(upscale_factor=upscale_factor)
