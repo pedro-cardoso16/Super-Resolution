@@ -22,7 +22,7 @@ subparsers = parser.add_subparsers(help="Sub-type", dest="command")
 # -- Train subparser ---------------------------------------------------------
 
 train_parser = subparsers.add_parser("train")
-
+train_parser.add_argument("self")
 train_parser.add_argument("train_folder")
 train_parser.add_argument("-u", "--upscale-factor", default=3)
 train_parser.add_argument(

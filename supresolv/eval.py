@@ -54,7 +54,7 @@ def eval_model(*imgs: str, upscale_factor: int, model: str | nn.Module) -> list:
         img_nearest = img_in.resize(img_out.size, PIL.Image.Resampling.NEAREST)
 
         target_image = output_to_image(
-            target.reshape(1, -1, target.shape[-1], target.shape[-2]), cb, cr
+            target.reshape(1, -1, target.shape[-2], target.shape[-1]), cb, cr
         )
 
         # print(target_image.size, img_out.size)
@@ -91,13 +91,13 @@ def eval_model(*imgs: str, upscale_factor: int, model: str | nn.Module) -> list:
 
             # print(i.size, target_image.size)
             a = np.array(i.convert("RGB")).swapaxes(0, -1)
-            b = np.array(target_image.convert("RGB")).swapaxes(0, -1).swapaxes(-1,-2)
+            b = np.array(target_image.convert("RGB")).swapaxes(0, -1)
 
             print(a.shape, b.shape)
 
-            ssim = 0
-            for index in range(3):
-                ssim += structural_similarity(a[index], b[index]) / 3
+            # ssim = 0
+            # for index in range(3):
+            ssim = structural_similarity(a, b, channel_axis=0)
             # print(a.shape,b.shape)
 
             performance = {
